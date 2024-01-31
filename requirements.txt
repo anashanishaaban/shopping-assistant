@@ -1,1 +1,5 @@
-django
+Django 
+requests 
+beautifulsoup4
+reportlab
+xhtml2pdf
