@@ -4,3 +4,4 @@ beautifulsoup4
 reportlab
 xhtml2pdf
 selenium
+pymongo
