@@ -1,43 +1,70 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+import requests
 from bs4 import BeautifulSoup
+import csv
 import time
+from concurrent.futures import ThreadPoolExecutor
 
-# Selenium setup
-options = Options()
-options.headless = True  # Run Chrome in headless mode (without GUI)
-options.add_argument("--window-size=1920,1200")
-options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+headers = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Sec-Ch-Ua": "\"Not A(Brand\";v=\"99\", \"Microsoft Edge\";v=\"121\", \"Chromium\";v=\"121\"",
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": "\"Windows\"",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "cross-site",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0",
+    "X-Amzn-Trace-Id": "Root=1-65c58daf-3a2c6c3a7adb35726b652acb"
+}
 
-driver_path = '/Users/anasshaaban/chromedriver_mac64'
-driver = webdriver.Chrome(options=options)
+def get_product_links_amazon(url):
+    page = requests.get(url, headers=headers)
+    soup = BeautifulSoup(page.content, "html.parser")
+    a_tag = soup.find_all('a', class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal')
+    
+    product_link_list = []
+    for tag in a_tag:
+        href = tag.get('href', '')
+        # Check if href is a complete URL or a relative path
+        if href.startswith('http'):
+            product_link_list.append(href)
+        else:
+            # Ensure it's a relative path and prepend the base URL
+            product_link_list.append('https://www.amazon.com' + href)
+            
+    return product_link_list
 
 
-# Use Selenium to get the page's dynamic content
-url = "https://www.bestbuy.com/site/searchpage.jsp?st=mouse&_dyncharset=UTF-8&_dynSessConf=&id=pcat17071&type=page&sc=Global&cp=1&nrp=&sp=&qp=&list=n&af=true&iht=y&usc=All+Categories&ks=960&keys=keys"
-driver.get(url)
+def get_product_data_amazon(url):
+    page = requests.get(url, headers=headers)
+    soup = BeautifulSoup(page.content, "html.parser")
 
-# Wait for the dynamic content to load (adjust the sleep time as necessary)
-time.sleep(5)  # Example: wait for 5 seconds; consider using more robust waiting methods
+    title = soup.find(id='productTitle').get_text().strip() if soup.find(id='productTitle') else 'N/A'
+    price = soup.find('span', class_='a-offscreen').get_text().strip() if soup.find('span', class_='a-offscreen') else 'N/A'
+    rating = soup.find('span', id='acrCustomerReviewText').get_text().strip() if soup.find('span', id='acrCustomerReviewText') else 'N/A'
+    score = soup.find('span', class_='a-icon-alt').get_text().strip() if soup.find('span', class_='a-icon-alt') else 'N/A'
+    review_summary = 'N/A'  # Amazon pages usually don't have an element with id='product-summary'
 
-# Now that the page is loaded, get the page source
-html = driver.page_source
-driver.quit()  # Don't forget to close the browser
+    return [url, title, price, rating, score, review_summary]
 
-# Use BeautifulSoup to parse the page source
-doc = BeautifulSoup(html, "html.parser")
-product_items = doc.findall("div", class_="shop-sku-list-item")
+def main():
+    start = time.time()
+    link = 'https://www.amazon.com/s?k=razer+mouse'
+    product_links = get_product_links_amazon(link)
 
-product_names = []
-for item in product_items:
-    h4 = item.h4  # Access the h4 element of each item
-    if h4:  # Check if the h4 element exists
-        product_names.append(h4.text)  # Add the text of the h4 element to the product_names list
+    categories = ['URL', 'Title', 'Price', 'Ratings', 'Score', 'Review Summary']
+    with open('scrape.csv', 'w', newline='', encoding='UTF-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(categories)
 
-# Process the product names as before
-if product_names:
-    print("Found product names:")
-    for product in product_names:
-        print(product.text.strip())
-else:
-    print("Product names not found - check if the content is dynamically loaded or the class name has changed.")
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            results = executor.map(get_product_data_amazon, product_links)
+            for data in results:
+                writer.writerow(data)
+    end = time.time()
+    print(end-start)
+if __name__ == "__main__":
+    main()
