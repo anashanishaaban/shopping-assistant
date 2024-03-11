@@ -6,3 +6,4 @@ xhtml2pdf
 selenium
 pymongo
 openai
+webdriver-manager
