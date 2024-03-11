@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Products</title>
+</head>
+<body>
+    <button id="fetchProductsBtn">Fetch Products</button>
+    <div id="productsContainer">
+        <!-- Product data will be displayed here -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#fetchProductsBtn').click(function() {
+                $.ajax({
+                    url: '/add', // Adjust this URL to your Django route that triggers add_product
+                    type: 'get', // or 'POST' if you modify your view to accept POST requests
+                    success: function(response) {
+                        // Assuming 'response' is the HTML content you want to display
+                        $('#productsContainer').html(response);
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log("Error: " + errmsg);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
