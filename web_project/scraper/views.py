@@ -208,7 +208,6 @@ def add_product(request):
 
     api_call(search_term)
     '''
-    OPENAI_API_KEY="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"
     client = OpenAI(api_key=OPENAI_API_KEY)
     if request.method == 'POST':
         user_query = request.POST.get('user_query')
