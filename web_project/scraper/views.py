@@ -193,7 +193,7 @@ def add_product(request):
         results = list(executor.map(get_product_data_csv))
         print(results)
     '''
-    '''
+
     search_term = request.GET.get('search_term', '')
 
     if search_term:
@@ -207,7 +207,7 @@ def add_product(request):
     
 
     api_call(search_term)
-    '''
+    OPENAI_API_KEY="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"
     client = OpenAI(api_key=OPENAI_API_KEY)
     if request.method == 'POST':
         user_query = request.POST.get('user_query')
@@ -235,7 +235,4 @@ def add_product(request):
         #add_product_data_to_db(data)
     
     # Instead of returning an HttpResponse, render the template with the results
-    return render(request, 'add_products.html', {
-        'products': results,
-        'recommendations': content
-    })
+    return render(request, 'add_products.html', {'products': results})
