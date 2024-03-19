@@ -21,10 +21,30 @@
             display: flex;
             flex-wrap: wrap;
         }
+        .recommendations {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <h1>Added Products</h1>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <textarea name="user_query" placeholder="What would you like to know?"></textarea>
+        <button type="submit">Ask</button>
+    </form>
+
+    {% if recommendations %}
+    <div class="recommendations">
+        <h2>Recommendations:</h2>
+        <p>{{ recommendations }}</p>
+    </div>
+    {% endif %}
+
+    
     <div class="product-list">
         {% for product in products %}
         <div class="product-item">
