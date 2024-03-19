@@ -3,31 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fetch Products</title>
+    <title>Added Products</title>
+    <style>
+        .product-item {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            flex: 1 0 21%; /* Adjust based on your layout */
+        }
+        .product-item img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
 </head>
 <body>
-    <button id="fetchProductsBtn">Fetch Products</button>
-    <div id="productsContainer">
-        <!-- Product data will be displayed here -->
+    <h1>Added Products</h1>
+    <div class="product-list">
+        {% for product in products %}
+        <div class="product-item">
+            <img src="{{ product.3 }}" alt="Product Image">
+            <h2>{{ product.0 }}</h2> <!-- Title -->
+            <p><strong>ASIN:</strong> {{ product.1 }}</p>
+            <p><strong>Price:</strong> {{ product.8 }} {{ product.9 }}</p>
+            <p><strong>Ratings:</strong> {{ product.4 }} ({{ product.5 }} total)</p>
+            <p><strong>Prime Eligible:</strong> {{ product.6 }}</p>
+            <p><strong>Sponsored:</strong> {{ product.7 }}</p>
+            <a href="{{ product.2 }}" target="_blank">View Product</a>
+        </div>
+        {% endfor %}
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#fetchProductsBtn').click(function() {
-                $.ajax({
-                    url: '/add', // Adjust this URL to your Django route that triggers add_product
-                    type: 'get', // or 'POST' if you modify your view to accept POST requests
-                    success: function(response) {
-                        // Assuming 'response' is the HTML content you want to display
-                        $('#productsContainer').html(response);
-                    },
-                    error: function(xhr, errmsg, err) {
-                        console.log("Error: " + errmsg);
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>

@@ -15,6 +15,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
+import os
 
 
 headers = {
@@ -37,6 +39,7 @@ headers = {
 AMAZON
 '''
 
+'''
 def get_product_links_amazon(url):
     page = requests.get(url, headers=headers)
     soup = BeautifulSoup(page.content, "html.parser")
@@ -66,115 +69,78 @@ def get_product_data_amazon(url):
     review_summary = soup.find(id='product-summary').get_text().strip() if soup.find(id='product-summary') else 'N/A'
 
     return [url, title, price, rating, score, review_summary]
+'''
 
-"""
-WALMART
-"""
+def api_call(search_term):
 
-def get_product_links_walmart(url):
-    page = requests.get(url, headers=headers)
-    soup = BeautifulSoup(page.content, "html.parser")
+    # Set up the request parameters
+    params = {
+        'api_key': '7E9E4E160584452791B7CB9E8829AACD',
+        'type': 'search',
+        'amazon_domain': 'amazon.com',
+        'search_term': search_term,
+        'output': 'csv'
+    }
 
-    a_tags = soup.find_all('a', class_='absolute w-100 h-100 z-1 hide-sibling-opacity')
+    # Make the HTTP GET request to Rainforest API
+    api_result = requests.get('https://api.rainforestapi.com/request', params)
+
+    # Save the CSV response to a file
+    with open('output.csv', 'wb') as file:
+        file.write(api_result.content)
+        
+
+def get_product_data_csv(file_path):
+    # Load the CSV file into a DataFrame
+    data = pd.read_csv(file_path)
+
+    # Selecting the required columns
+    selected_columns = [
+        'search_results.title', 
+        'search_results.asin', 
+        'search_results.link', 
+        'search_results.image', 
+        'search_results.rating', 
+        'search_results.ratings_total', 
+        'search_results.is_prime', 
+        'search_results.sponsored', 
+        'search_results.price.currency', 
+        'search_results.price.value'
+    ]
     
-    links = [a['href'] for a in a_tags if 'href' in a.attrs and not a['href'].startswith('https')]
-
-    base_url = 'https://www.walmart.com'
-    full_links = [base_url + link for link in links]
+    # Ensure all columns exist, fill missing with 'N/A'
+    for col in selected_columns:
+        if col not in data.columns:
+            data[col] = 'N/A'
     
-    return full_links
-
-def get_product_details_walmart(url):
-    page = requests.get(url, headers=headers)
-    soup = BeautifulSoup(page.content, "html.parser")
-    title = soup.find(id="main-title").text
-    price = soup.find('span', itemprop='price').text
-    rating = soup.find('a', itemprop='ratingCount').text if soup.find('a', itemprop='ratingCount') else 'N/A'
-    score = soup.find('span', class_='f7 rating-number').text if soup.find('span', class_='f7 rating-number') else 'N/A'
-    image = soup.find('img', class_=['noselect', 'db'])['src']
-    return [title,price,rating,score,image]
-
-
-"""
-BEST BUY
-"""
-
-def get_product_links_bestbuy(url):
-    page = requests.get(url, headers=headers)
-    soup = BeautifulSoup(page.content, "html.parser")
-
-    h4_elements = soup.find_all('h4', class_='sku-title')
-    links = []
-    for h4 in h4_elements:
-        a_tag = h4.find('a', href=True)
-        if a_tag:
-            link = 'https://www.bestbuy.com' + a_tag['href'] 
-            links.append(link)
+    # Select the required columns
+    selected_data = data[selected_columns]
     
-    return links
-
-def get_product_details_bestbuy(url):
-    page = requests.get(url, headers=headers)
-    soup = BeautifulSoup(page.content, "html.parser")
-    title = soup.find('h1',class_='heading-5 v-fw-regular').text
-    price_div = soup.find('div', {'data-testid': 'customer-price'})
-    price = price_div.find('span', {'aria-hidden': 'true'}).text
-    rating = soup.find('span',class_='c-reviews order-2').text
-    score = soup.find('span',class_="ugc-c-review-average font-weight-medium order-1").text
-    image = soup.find('img',class_='primary-image')['src']
-    return [title,price,rating,score,image]
-
-"""
-TARGET (using selenium)
-"""
-
-def get_product_links_target(url):
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    driver.get(url)
+    # Convert boolean to string for consistency with the original function
+    selected_data['search_results.is_prime'] = selected_data['search_results.is_prime'].map({True: 'Prime', False: 'Non-Prime', pd.NA: 'N/A'})
+    selected_data['search_results.sponsored'] = selected_data['search_results.sponsored'].map({True: 'Sponsored', False: 'Not Sponsored', pd.NA: 'N/A'})
     
-    # wait for page to load before finding links to products
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.XPATH, '//a[@data-test="product-title"]'))
-    )
+    # Convert the DataFrame to a list of dictionaries for easier processing
+    products_list = selected_data.to_dict(orient='records')
     
-    product_elements = driver.find_elements(By.XPATH, '//a[@data-test="product-title"]')
-    product_link_list = [element.get_attribute('href') for element in product_elements]    
-    driver.quit()
-    return product_link_list
-
-def get_product_details_target(url):
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    products_info = []
-
-    driver.get(url)
+    # Convert each product into a list format
+    products_data = []
+    for product in products_list:
+        product_data = [
+            product['search_results.title'],
+            product['search_results.asin'],
+            product['search_results.link'],
+            product['search_results.image'],
+            str(product['search_results.rating']) if product['search_results.rating'] != 'N/A' else product['search_results.rating'],
+            str(product['search_results.ratings_total']),
+            product['search_results.is_prime'],
+            product['search_results.sponsored'],
+            product['search_results.price.currency'],
+            str(product['search_results.price.value']) if product['search_results.price.value'] != 'N/A' else product['search_results.price.value']
+        ]
+        products_data.append(product_data)
     
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="product-title"]'))
-    )
-    
-    title = driver.find_element(By.CSS_SELECTOR, '[data-test="product-title"]').text
-    
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="product-price"]'))
-    )
-    price = driver.find_element(By.CSS_SELECTOR, '[data-test="product-price"]').text
-    
-    try:
-        rating_elements = driver.find_element(By.CSS_SELECTOR, '[data-test="ratings"]').text
-    except:
-        rating_elements = "No rating"
-
-    parts = rating_elements.split(' ')
-    score = f"{parts[0]}/{parts[3]}"
-    rating = parts[-2] + " ratings"
-
-    image_element = driver.find_element(By.CSS_SELECTOR, 'img[alt^="Logitech M240 Wireless Mouse"]')
-    image = image_element.get_attribute('src')
-    
-    products_info.append((title, price, rating, image))
-    
-    driver.quit()
-    return products_info
+    return products_data
 
 def index(request):
     return HttpResponse("<h1>App is running</h1>")
@@ -194,13 +160,29 @@ def add_product_data_to_db(data):
     }
     product.insert_one(records)
 
-def add_product(request):
-    link = 'https://www.amazon.com/s?k=razer+mouse'
-    product_links = get_product_links_amazon(link)
+def search_form(request):
+    return render(request, 'search_bar.html')
 
+def add_product(request):
+    '''
     # Using ThreadPoolExecutor to concurrently fetch product data
     with ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(get_product_data_amazon, product_links))
+        results = list(executor.map(get_product_data_csv))
+        print(results)
+    '''
+    search_term = request.GET.get('search_term', '')
+    if search_term:
+    # Define the path to the output.csv file
+        output_csv_path = "C:\\Users\\anoos\\shopping-assistant-2\\web_project\\scraper\\output.csv"
+
+    # Check if the output.csv file exists
+    if os.path.exists(output_csv_path):
+        # If it exists, delete the file
+        os.remove(output_csv_path)
+
+    api_call(search_term)
+    results=get_product_data_csv("output.csv")
+    print(results[:5])
 
     # Now, iterate through the results and add them to the database
     #for data in results:
@@ -208,9 +190,3 @@ def add_product(request):
     
     # Instead of returning an HttpResponse, render the template with the results
     return render(request, 'add_products.html', {'products': results})
-    
-
-def get_all_product(request):
-    products = product.find()
-    return(products)
-

@@ -1,0 +1,6 @@
+{
+    "request_info": {
+        "success": false,
+        "message": "'amazon_domain' parameter is invalid - for supported Amazon domains visit https://www.rainforestapi.com/docs/product-data-api/reference/amazon-domains"
+    }
+}
