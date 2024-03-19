@@ -16,6 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
+import os
 
 
 headers = {
@@ -69,6 +70,25 @@ def get_product_data_amazon(url):
 
     return [url, title, price, rating, score, review_summary]
 '''
+
+def api_call(search_term):
+
+    # Set up the request parameters
+    params = {
+        'api_key': '7E9E4E160584452791B7CB9E8829AACD',
+        'type': 'search',
+        'amazon_domain': 'amazon.com',
+        'search_term': search_term,
+        'output': 'csv'
+    }
+
+    # Make the HTTP GET request to Rainforest API
+    api_result = requests.get('https://api.rainforestapi.com/request', params)
+
+    # Save the CSV response to a file
+    with open('output.csv', 'wb') as file:
+        file.write(api_result.content)
+        
 
 def get_product_data_csv(file_path):
     # Load the CSV file into a DataFrame
@@ -140,6 +160,9 @@ def add_product_data_to_db(data):
     }
     product.insert_one(records)
 
+def search_form(request):
+    return render(request, 'search_bar.html')
+
 def add_product(request):
     '''
     # Using ThreadPoolExecutor to concurrently fetch product data
@@ -147,7 +170,17 @@ def add_product(request):
         results = list(executor.map(get_product_data_csv))
         print(results)
     '''
+    search_term = request.GET.get('search_term', '')
+    if search_term:
+    # Define the path to the output.csv file
+        output_csv_path = "C:\\Users\\anoos\\shopping-assistant-2\\web_project\\scraper\\output.csv"
 
+    # Check if the output.csv file exists
+    if os.path.exists(output_csv_path):
+        # If it exists, delete the file
+        os.remove(output_csv_path)
+
+    api_call(search_term)
     results=get_product_data_csv("output.csv")
     print(results[:5])
 
@@ -157,9 +190,3 @@ def add_product(request):
     
     # Instead of returning an HttpResponse, render the template with the results
     return render(request, 'add_products.html', {'products': results})
-    
-
-def get_all_product(request):
-    products = product.find()
-    return(products)
-
