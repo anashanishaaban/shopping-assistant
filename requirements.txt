@@ -7,3 +7,4 @@ selenium
 pymongo
 openai
 webdriver-manager
+pandas
