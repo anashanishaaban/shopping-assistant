@@ -3,8 +3,8 @@ import pandas as pd
 import requests
 
 def openai_call(request):
-  #OPENAI_API_KEY=dwd
-  client = OpenAI(api_key=OPENAI_API_KEY)
+ 
+  #client = OpenAI(api_key=OPENAI_API_KEY)
   if requests.method == 'POST':
       user_query = request.POST.get('user_query')
       
