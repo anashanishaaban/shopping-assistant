@@ -131,3 +131,19 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'scraper/static'),)
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# Celery settings
+CELERY_BROKER_URL = "redis://127.0.0.1:6379"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mail.yahoo.com'
+EMAIL_HOST_USER = 'anasshaaban@yahoo.com'  # Your full Yahoo email address
+EMAIL_HOST_PASSWORD = 'ljeghppuzyixrmeg'       # Your Yahoo email password
+EMAIL_PORT = 587  
