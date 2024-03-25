@@ -8,3 +8,6 @@ pymongo
 openai
 webdriver-manager
 pandas
+redis 
+celery
+eventlet

@@ -1,38 +1,29 @@
-import requests
-import pandas as pd
-'''
-# Set up the request parameters
-params = {
-    'api_key': '7E9E4E160584452791B7CB9E8829AACD',
-    'type': 'search',
-    'amazon_domain': 'amazon.com',
-    'search_term': 'gaming mouse',
-    'output': 'csv'
-}
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-# Make the HTTP GET request to Rainforest API
-api_result = requests.get('https://api.rainforestapi.com/request', params)
+# Replace these with your details
+your_email = 'anasshaaban@yahoo.com'
+your_app_password = 'ljeghppuzyixrmeg'  # Use your app-specific password here
+recipient_email = 'anooshani@yahoo.com'
 
-# Save the CSV response to a file
-with open('output.csv', 'wb') as file:
-    file.write(api_result.content)
-    
-'''
+# Create the MIME message
+msg = MIMEMultipart()
+msg['From'] = your_email
+msg['To'] = recipient_email
+msg['Subject'] = 'Test Email from Python'
+body = 'This is a test email sent from a Python script using Yahoo SMTP.'
+msg.attach(MIMEText(body, 'plain'))
 
-# Load the CSV file into a DataFrame
-data = pd.read_csv('output.csv')
-
-# Selecting the required columns
-selected_data = data[[
-    'search_results.title', 
-    'search_results.asin', 
-    'search_results.link', 
-    'search_results.image', 
-    'search_results.rating', 
-    'search_results.ratings_total', 
-    'search_results.sponsored', 
-    'search_results.price.value'
-]]
-
-# Check the first few rows of the selected columns to ensure correctness
-print(selected_data.head())
+# Send the email
+try:
+    server = smtplib.SMTP('smtp.mail.yahoo.com', 587)
+    server.set_debuglevel(1)  # Enable debug output to see the communication with the server
+    server.starttls()
+    server.login(your_email, your_app_password)
+    text = msg.as_string()
+    server.sendmail(your_email, recipient_email, text)
+    server.quit()
+    print("Email sent successfully!")
+except Exception as e:
+    print(f"Failed to send email: {e}")
