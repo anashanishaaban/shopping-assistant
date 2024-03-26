@@ -10,7 +10,15 @@ client = OpenAI(
 # Define the default route to return the index.html file
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("Landing.html")
+
+@app.route('/login')
+def login():
+    return render_template('Login.html')
+
+@app.route('/signup')
+def signup():
+    return render_template('Signup.html')
 
 # Define the /api route to handle POST requests
 @app.route("/api", methods=["POST"])
