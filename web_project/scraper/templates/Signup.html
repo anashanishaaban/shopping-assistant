@@ -36,7 +36,7 @@
               <input
                 id="username"
                 name="username"
-                type="username"
+                type="text"
                 autocomplete="username"
                 required
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -109,5 +109,49 @@
         </p>
       </div>
     </div>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      const firebaseConfig = {
+        apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
+        authDomain: "shopgpt-5c2ba.firebaseapp.com",
+        projectId: "shopgpt-5c2ba",
+        storageBucket: "shopgpt-5c2ba.appspot.com",
+        messagingSenderId: "38794416133",
+        appId: "1:38794416133:web:8de7c652259a571cf98c6c",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Function to register user
+      async function registerUser(event) {
+        event.preventDefault(); // Prevent the form from submitting via the browser
+
+        const username = document.getElementById("username").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+          console.log("Registered user:", user);
+          // location.href = '/login'; // Uncomment this line to redirect the user after successful registration
+          alert("Registration successful!");
+        } catch (error) {
+          console.error("Error registering new user:", error);
+          alert("Error registering user: " + error.message);
+        }
+      }
+      document.querySelector("form").addEventListener("submit", registerUser);
+    </script>
   </body>
 </html>
