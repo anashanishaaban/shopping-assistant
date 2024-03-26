@@ -17,7 +17,7 @@ def login():
     return render_template('Login.html')
 
 @app.route('/signup')
-def login():
+def signup():
     return render_template('Signup.html')
 
 # Define the /api route to handle POST requests
