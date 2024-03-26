@@ -16,6 +16,10 @@ def index():
 def login():
     return render_template('Login.html')
 
+@app.route('/signup')
+def login():
+    return render_template('Signup.html')
+
 # Define the /api route to handle POST requests
 @app.route("/api", methods=["POST"])
 def api():
