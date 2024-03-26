@@ -109,11 +109,9 @@
         appId: "1:38794416133:web:8de7c652259a571cf98c6c",
       };
 
-      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
 
-      // Function to handle user login
       async function loginUser(event) {
         event.preventDefault(); // Prevent the default form submission
 
@@ -126,17 +124,13 @@
             email,
             password
           );
-          // User logged in successfully
           console.log("Logged in user:", userCredential.user);
-          // Redirect to a new page or update the UI as needed
           alert("Login successful!");
         } catch (error) {
           console.error("Error logging in user:", error);
           alert("Login failed: " + error.message);
         }
       }
-
-      // Add event listener to the form
       document.querySelector("form").addEventListener("submit", loginUser);
     </script>
   </body>
