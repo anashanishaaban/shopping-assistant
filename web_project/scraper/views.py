@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import product
 from django.http import HttpResponse
 import requests
@@ -32,7 +32,16 @@ def add_product_data_to_db(data):
     product.insert_one(records)
 
 def search_form(request):
-    return render(request, 'search_bar.html')
+    return render(request, 'Landing.html')
+
+def login(request):
+    return render(request, 'Login.html')
+
+def signup_view(request):
+    if request.method == 'POST':
+        # Process signup
+        return redirect('login')
+    return render(request, 'signup.html')
 
 def add_product(request):
 
@@ -40,19 +49,19 @@ def add_product(request):
     search_term = request.GET.get('search_term', '')
 
     #if search_term:
-        #output_csv_path = "C:\Users\anoos\shopping-assistant-2\web_project\scraper\output.csv
-
-    '''if os.path.exists(output_csv_path):
-        os.remove(output_csv_path)'''
+       #output_csv_path = "C:\\Users\\anoos\\shopping-assistant-2\\web_project\\scraper\\output.csv"
 
 
-    '''api_call(search_term)'''
+    #if os.path.exists(output_csv_path):
+        #os.remove(output_csv_path)
+
+
+    #api_call(search_term)
     results=get_product_data_csv("output.csv")
-    #print(results)
     #asins = [product[1] for product in results]
     #fetch_and_save_product_details.delay(asins)
     # Now, iterate through the results and add them to the database
     #for data in results:
         #add_product_data_to_db(data)
 
-    return render(request, 'add_product.html', {'products': results})
+    return render(request, 'Results.html', {'products': results})
