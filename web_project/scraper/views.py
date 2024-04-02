@@ -39,14 +39,14 @@ def add_product(request):
 
     search_term = request.GET.get('search_term', '')
 
-    if search_term:
-        output_csv_path = "C:\\Users\\anoos\\shopping-assistant-2\\web_project\\scraper\\output.csv"
+    #if search_term:
+        #output_csv_path = "C:\Users\anoos\shopping-assistant-2\web_project\scraper\output.csv
 
-    if os.path.exists(output_csv_path):
-        os.remove(output_csv_path)
-    
+    '''if os.path.exists(output_csv_path):
+        os.remove(output_csv_path)'''
 
-    api_call(search_term)
+
+    '''api_call(search_term)'''
     results=get_product_data_csv("output.csv")
     #print(results)
     #asins = [product[1] for product in results]
@@ -54,8 +54,5 @@ def add_product(request):
     # Now, iterate through the results and add them to the database
     #for data in results:
         #add_product_data_to_db(data)
-    
-    # Instead of returning an HttpResponse, render the template with the results
-    return render(request, 'add_products.html', {'products': results})
 
-
+    return render(request, 'add_product.html', {'products': results})
