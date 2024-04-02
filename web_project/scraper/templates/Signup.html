@@ -144,7 +144,7 @@
           );
           const user = userCredential.user;
           console.log("Registered user:", user);
-          // location.href = '/login'; // Uncomment this line to redirect the user after successful registration
+          location.href = '/login';
           alert("Registration successful!");
         } catch (error) {
           console.error("Error registering new user:", error);

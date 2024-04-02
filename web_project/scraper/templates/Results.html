@@ -199,36 +199,24 @@
       >
         <h2 class="sr-only">Products</h2>
 
-        <div
-          id="productGrid"
-          class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
-        >
-          <!-- Products will be inserted here -->
+        <div id="productGrid" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+          {% for product in products %}
+              <a href="{{ product.2 }}" class="group border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                  <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+                      <img src="{{ product.3 }}" alt="{{ product.0 }}" class="h-full w-full object-cover object-center group-hover:opacity-75">
+                  </div>
+                  <div class="p-6">
+                      <h3 class="text-sm text-gray-700">{{ product.0 }}</h3>
+                      <p class="mt-1 text-lg font-medium text-gray-900">${{ product.9 }}</p>
+                      <p class="text-sm text-gray-500">{{ product.6 }} | {{ product.7 }}</p>
+                  </div>
+              </a>
+          {% endfor %}
         </div>
       </div>
     </div>
 
     <script>
-      const csvData = `Brand,ProductName,Price,ImageUrl
-Nike,Shoes,149,https://static.nike.com/a/images/t_PDP_1280_v1/q_auto:eco/99486859-0ff3-46b4-949b-2d16af2ad421/custom-nike-dunk-high-by-you-shoes.png
-Razer,Mouse,159,https://images.monoprice.com/productlargeimages/440281.jpg
-Dell,Monitor,199,https://m.media-amazon.com/images/I/71+qQN-3KvL.jpg
-Razer,Mouse,159,https://images.monoprice.com/productlargeimages/440281.jpg
-Nike,Shoes,149,https://static.nike.com/a/images/t_PDP_1280_v1/q_auto:eco/99486859-0ff3-46b4-949b-2d16af2ad421/custom-nike-dunk-high-by-you-shoes.png
-Dell,Monitor,199,https://m.media-amazon.com/images/I/71+qQN-3KvL.jpg
-Red Dragon,Keyboard,39,https://media.wired.com/photos/65b0438c22aa647640de5c75/master/pass/Mechanical-Keyboard-Guide-Gear-GettyImages-1313504623.jpg`;
-
-      function parseCSV(csvString) {
-        const lines = csvString.trim().split("\n");
-        const keys = lines.shift().split(",");
-        return lines.map((line) => {
-          const values = line.split(",");
-          return keys.reduce(
-            (obj, key, index) => ({ ...obj, [key]: values[index] }),
-            {}
-          );
-        });
-      }
 
       function createCard(product) {
         return `
