@@ -1,51 +1,172 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" data-theme="light">
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ShopGPT</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <div class="bg-white">
-        <header class="absolute inset-x-0 top-0 z-50">
-            <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
-                <div class="flex lg:flex-1">
-                    <a href="#" class="-m-1.5 p-1.5">
-                        <span class="sr-only">ShopGPT</span>
-                        <img class="h-8 w-auto" src="{% static 'images/logo.png' %}" alt="" />
-                    </a>
-                </div>
-                <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                  <a href="{% url 'login' %}" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
-                </div>
-            </nav>
-        </header>
-
-        <div class="relative isolate px-6 pt-14 lg:px-8">
-            <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-                <div class="text-center">
-                    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Introducing Shop<span style="color: #2596be">GPT</span></h1>
-                    <p class="mt-6 text-lg leading-8 text-gray-600">An AI powered shopping assistant.</p>
-                </div>
-
-                <!-- Search Form -->
-                <div class="mt-8">
-                    <form action="{% url 'add_product' %}" method="get" class="input input-bordered flex items-center gap-2 justify-center">
-                        <input type="text" class="grow" name="search_term" placeholder="Search" />
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
-                            <path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd"/>
-                        </svg>
-                    </form>
-                </div>
-                <!-- End of Search Form -->
-
+  </head>
+  <body>
+    <div class="navbar bg-base-200">
+      <div class="flex-1">
+        <a class="btn btn-ghost text-xl">
+          <span>ShopGPT</span>
+          <span>
+            <img
+              src="../static/images/logo.png"
+              alt="Logo"
+              class="h-10 w-auto"
+            />
+          </span>
+        </a>
+      </div>
+      <div class="flex-none">
+        <div id="wishlist-container" class="hidden dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+            <div class="indicator">
+              <img src="../static/images/wishlist.png" class="h-8 w-8" />
+              <span class="badge badge-sm indicator-item">0</span>
             </div>
-            <!--<div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true"></div> -->
+          </div>
+          <div
+            tabindex="0"
+            class="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow"
+          >
+            <div class="card-body">
+              <span class="font-bold text-lg">0 Items</span>
+              <span class="text-info">Subtotal: $0</span>
+              <div class="card-actions">
+                <button class="btn btn-primary btn-block">View Wishlist</button>
+              </div>
+            </div>
+          </div>
         </div>
+        <div id="auth-container" class="hidden">
+          <a href="{% url 'login' %}" class="btn btn-ghost">Log in</a>
+        </div>
+        <div id="navbar-container" class="hidden dropdown dropdown-end">
+          <div tabindex="0" role="button" class="flex items-center">
+            <div class="avatar">
+              <div class="w-10 rounded-full">
+                <img alt="User Avatar" src="../static/images/user.png" />
+              </div>
+            </div>
+            <span id="username-display" class="ml-2 font-medium"></span>
+          </div>
+          <ul
+            tabindex="0"
+            class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            <li><a>Profile</a></li>
+            <li><a href="/" id="logout-btn">Logout</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-</body>
+
+    <div class="relative isolate px-6 pt-14 lg:px-8">
+      <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div class="text-center">
+          <h1
+            class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
+          >
+            Introducing Shop<span style="color: #2596be">GPT</span>
+          </h1>
+          <p class="mt-6 text-lg leading-8 text-gray-600">
+            An AI powered shopping assistant.
+          </p>
+        </div>
+        <!-- Search Form -->
+        <div class="mt-8">
+          <form
+            action="{% url 'add_product' %}"
+            method="get"
+            class="input input-bordered flex items-center gap-2 justify-center"
+          >
+            <input
+              type="text"
+              class="grow"
+              name="search_term"
+              placeholder="Search"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              class="w-4 h-4 opacity-70"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
+        authDomain: "shopgpt-5c2ba.firebaseapp.com",
+        projectId: "shopgpt-5c2ba",
+        storageBucket: "shopgpt-5c2ba.appspot.com",
+        messagingSenderId: "38794416133",
+        appId: "1:38794416133:web:8de7c652259a571cf98c6c",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      const wishlistContainer = document.getElementById("wishlist-container");
+      const loginBtn = document.getElementById("auth-container");
+      const navbarContainer = document.getElementById("navbar-container");
+      const usernameDisplay = document.getElementById("username-display");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      // Check the user's authentication state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is logged in
+          wishlistContainer.style.display = "block";
+          loginBtn.style.display = "none";
+          navbarContainer.style.display = "block";
+          usernameDisplay.textContent = user.displayName;
+        } else {
+          // User is logged out
+          wishlistContainer.style.display = "none";
+          loginBtn.style.display = "block";
+          navbarContainer.style.display = "none";
+        }
+      });
+
+      // Logout functionality
+      logoutBtn.addEventListener("click", async () => {
+        try {
+          await signOut(auth);
+          window.location.href = "{% url 'landing' %}";
+        } catch (error) {
+          console.error("Error logging out:", error);
+        }
+      });
+    </script>
+  </body>
 </html>
