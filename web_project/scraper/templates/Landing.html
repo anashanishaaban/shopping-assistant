@@ -68,7 +68,7 @@
             class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li><a>Profile</a></li>
-            <li><a href="/landing" id="logout-btn">Logout</a></li>
+            <li><a href="/" id="logout-btn">Logout</a></li>
           </ul>
         </div>
       </div>
@@ -162,7 +162,7 @@
       logoutBtn.addEventListener("click", async () => {
         try {
           await signOut(auth);
-          window.location.href = "{% url 'login' %}";
+          window.location.href = "{% url 'landing' %}";
         } catch (error) {
           console.error("Error logging out:", error);
         }
