@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-3mr6gurglc^1ag=i3^+p&q#m#%=hlg^m2i+%3um-obr6n*2j@r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'shopping.msuaiclub.com']
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
