@@ -12,3 +12,5 @@ redis
 celery
 eventlet
 flask
+gunicorn
+uvicorn[standard]
