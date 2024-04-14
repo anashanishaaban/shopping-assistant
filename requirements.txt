@@ -11,4 +11,3 @@ pandas
 redis 
 celery
 eventlet
-flask
