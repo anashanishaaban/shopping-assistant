@@ -52,7 +52,7 @@
           </div>
         </div>
         <div id="auth-container" class="hidden">
-          <a href="{% url 'login' %}" class="btn btn-ghost">Log in</a>
+          <a href="{% url 'login' %}" class="btn btn-info btn-sm">Log in</a>
         </div>
         <div id="navbar-container" class="hidden dropdown dropdown-end">
           <div tabindex="0" role="button" class="flex items-center">
@@ -89,7 +89,7 @@
         <!-- Search Form -->
         <div class="mt-8">
           <form
-            action="{% url 'add_product' %}"
+            action="{% url 'search_results' %}"
             method="get"
             class="input input-bordered flex items-center gap-2 justify-center"
           >

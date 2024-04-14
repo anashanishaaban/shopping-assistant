@@ -65,3 +65,9 @@ def add_product(request):
         #add_product_data_to_db(data)
 
     return render(request, 'Results.html', {'products': results})
+
+def search_results(request):
+    search_term = request.GET.get('search_term')
+    # Retrieve the products based on the search_term
+    products = get_product_data_csv("output.csv")  # Your logic to fetch the products based on the search term
+    return render(request, 'results.html', {'search_term': search_term, 'products': products})
