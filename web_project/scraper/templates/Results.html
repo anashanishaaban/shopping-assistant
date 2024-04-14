@@ -13,6 +13,7 @@
       rel="stylesheet"
       type="text/css"
     />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
     <div class="navbar bg-base-200">
@@ -79,40 +80,58 @@
       </div>
     </div>
 
-    <div class="bg-white pt-16 md:pt-28">
+    <div class="bg-white pt-16 md:pt-10">
       <div
-        class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8"
+        class="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8"
       >
         <h2 class="sr-only">Products</h2>
-
         <div
           id="productGrid"
           class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
         >
           {% for product in products %}
-          <a
-            href="{{ product.2 }}"
-            class="group border border-gray-300 rounded-lg shadow-sm overflow-hidden"
+          <div
+            class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
           >
-            <div
-              class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7"
-            >
+            <a href="{{ product.2 }}">
               <img
                 src="{{ product.3 }}"
                 alt="{{ product.0 }}"
-                class="h-full w-full object-cover object-center group-hover:opacity-75"
+                class="h-80 w-72 object-cover rounded-t-xl"
               />
-            </div>
-            <div class="p-6">
-              <h3 class="text-sm text-gray-700">{{ product.0 }}</h3>
-              <p class="mt-1 text-lg font-medium text-gray-900">
-                ${{ product.9 }}
-              </p>
-              <p class="text-sm text-gray-500">
-                {{ product.6 }} | {{ product.7 }}
-              </p>
-            </div>
-          </a>
+              <div class="px-4 py-3 w-72">
+                <p
+                  class="text-lg font-bold text-black truncate block capitalize"
+                >
+                  {{ product.0 }}
+                </p>
+                <div class="flex items-center">
+                  <p class="text-lg font-semibold text-black cursor-auto my-3">
+                    ${{ product.9 }}
+                  </p>
+                  <div class="ml-auto">
+                    <button class="btn btn-sm btn-error btn-outline">
+                      Wishlist
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
           {% endfor %}
         </div>
       </div>
@@ -171,31 +190,6 @@
           console.error("Error logging out:", error);
         }
       });
-
-      function createCard(product) {
-        return `
-        <a href="#" class="group border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-    <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-        <img src="${product.ImageUrl}" alt="${product.ProductName}" class="h-full w-full object-cover object-center group-hover:opacity-75">
-    </div>
-    <div class="p-6"> <!-- Increased padding here -->
-        <h3 class="text-sm text-gray-700">${product.ProductName}</h3>
-        <p class="mt-1 text-sm text-gray-500">${product.Brand}</p>
-        <p class="mt-1 text-lg font-medium text-gray-900">$${product.Price}</p>
-    </div>
-</a>
-        `;
-      }
-
-      function renderProducts() {
-        const products = parseCSV(csvData);
-        const grid = document.getElementById("productGrid");
-        products.forEach((product) => {
-          grid.innerHTML += createCard(product);
-        });
-      }
-
-      renderProducts();
     </script>
   </body>
 </html>
