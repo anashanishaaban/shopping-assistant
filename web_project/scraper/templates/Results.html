@@ -15,32 +15,21 @@
     />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      .background-image-container {
-        background-image: url("../static/images/background.png");
-        background-repeat: repeat;
-        background-attachment: fixed;
+      body {
+        margin: 0;
+        padding: 0;
+        background: url("../static/images/background.png");
         background-size: cover;
-        position: relative;
-        z-index: -1;
       }
 
-      .background-image-container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: inherit;
-        background-repeat: inherit;
-        background-attachment: inherit;
-        background-size: inherit;
-        z-index: -1;
+      .content-wrapper {
+        position: relative;
+        z-index: 1;
       }
     </style>
   </head>
   <body>
-    <div class="background-image-container">
+    <div class="content-wrapper">
       <div class="navbar">
         <div class="flex-1">
           <a class="btn btn-ghost text-xl" href="/">
@@ -270,6 +259,14 @@
         } catch (error) {
           console.error("Error logging out:", error);
         }
+      });
+
+      // background
+      window.addEventListener("DOMContentLoaded", function () {
+        // Apply CSS styles after the content is loaded
+        document.body.style.background =
+          'url("../static/images/background.png") no-repeat fixed';
+        document.body.style.backgroundSize = "cover";
       });
     </script>
   </body>
