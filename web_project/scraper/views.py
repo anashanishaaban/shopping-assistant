@@ -43,6 +43,9 @@ def signup_view(request):
         return redirect('login')
     return render(request, 'signup.html')
 
+def profile(request):
+    return render(request, 'Profile.html')
+
 def add_product(request):
 
 
