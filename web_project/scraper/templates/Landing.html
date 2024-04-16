@@ -47,7 +47,7 @@
             <span class="font-bold text-lg">0 Items</span>
             <span class="text">Subtotal: $0</span>
             <div class="card-actions">
-              <button class="btn btn-outline btn-info btn-sm">
+              <button onclick="location.href='{% url 'wishlist' %}'"class="btn btn-outline btn-info btn-sm">
                 View Wishlist
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -423,11 +423,8 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-      import {
-        getAuth,
-        onAuthStateChanged,
-        signOut,
-      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
@@ -439,6 +436,7 @@
       };
 
       const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
       const auth = getAuth(app);
 
       const wishlistContainer = document.getElementById("wishlist-container");
@@ -447,23 +445,48 @@
       const usernameDisplay = document.getElementById("username-display");
       const logoutBtn = document.getElementById("logout-btn");
 
-      // Check the user's authentication state
+      function setupWishlistListener() {
+        const user = auth.currentUser;
+        if (user) {
+          const wishlistRef = collection(db, "users", user.uid, "wishlist");
+          onSnapshot(wishlistRef, (snapshot) => {
+            let totalItems = 0;
+            let totalPrice = 0;
+            snapshot.forEach(doc => {
+              const item = doc.data();
+              if (item.price > 0) {  // Ensure that placeholder items are not counted
+                totalItems += 1;
+                totalPrice += parseFloat(item.price);
+              }
+            });
+            const itemCountSpan = document.querySelector(".card-body span.font-bold.text-lg");
+            document.querySelector(".badge.badge-sm.indicator-item").textContent = totalItems;
+            document.querySelector(".card-body .text").textContent = `Subtotal: $${totalPrice.toFixed(2)}`;
+            // Ensure the wishlist container is displayed with the correct data when loaded
+            wishlistContainer.style.display = "block";
+            itemCountSpan.textContent = `${totalItems} Items`;
+          });
+        } else {
+          wishlistContainer.style.display = "none";
+        }
+      }
+
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          // User is logged in
-          wishlistContainer.style.display = "block";
           loginBtn.style.display = "none";
           navbarContainer.style.display = "block";
-          usernameDisplay.textContent = user.displayName;
+          usernameDisplay.textContent = user.displayName || "User";
+          setupWishlistListener(); // Call this function to ensure UI is updated on load
         } else {
-          // User is logged out
           wishlistContainer.style.display = "none";
           loginBtn.style.display = "block";
           navbarContainer.style.display = "none";
+          document.querySelector(".card-body span.font-bold.text-lg").textContent = "0 Items";
+          document.querySelector(".badge.badge-sm.indicator-item").textContent = 0;
+          document.querySelector(".card-body .text").textContent = "Subtotal: $0";
         }
       });
 
-      // Logout functionality
       logoutBtn.addEventListener("click", async () => {
         try {
           await signOut(auth);
