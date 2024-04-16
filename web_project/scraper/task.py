@@ -15,7 +15,7 @@ from django.core.mail import send_mail
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from .models import product
+#from .models import product
 import requests
 import json
 

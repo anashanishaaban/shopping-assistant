@@ -85,8 +85,8 @@
           class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
         >
           <li>
-            <button class="btn btn-sm">
-              <a href="/profile">Profile</a>
+            <button class="btn btn-sm" onclick="my_modal_3.showModal()">
+              <a>Change Profile Picture</a>
             </button>
           </li>
           <li class="pt-2">
@@ -421,13 +421,41 @@
       </div>
     </div>
 
+    <dialog id="my_modal_3" class="modal modal-middle">
+      <div class="modal-box flex justify-center items-center">
+        <form id="uploadForm">
+          <button
+            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onclick="my_modal_3.close()"
+          >
+            ✕
+          </button>
+          <input
+            type="file"
+            id="imageUpload"
+            class="file-input w-full max-w-xs"
+            accept="image/*"
+          />
+          <button type="submit" class="btn mt-4">Submit</button>
+        </form>
+      </div>
+    </dialog>
+
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+
       import {
         getAuth,
         onAuthStateChanged,
         signOut,
+        updateProfile,
       } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
@@ -470,6 +498,68 @@
           window.location.href = "{% url 'landing' %}";
         } catch (error) {
           console.error("Error logging out:", error);
+        }
+      });
+
+      const storage = getStorage(app);
+
+      // Function to update the displayed image in the navbar
+      function updateDisplayedImage(photoURL) {
+        const avatarImg = document.querySelector(".avatar img");
+        avatarImg.src = photoURL || "../static/images/user.png";
+      }
+
+      // Check the user's authentication state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is logged in
+          wishlistContainer.style.display = "block";
+          loginBtn.style.display = "none";
+          navbarContainer.style.display = "block";
+          usernameDisplay.textContent = user.displayName;
+
+          // Retrieve the user's profile photo URL and update the displayed image
+          if (user.photoURL) {
+            updateDisplayedImage(user.photoURL);
+          } else {
+            updateDisplayedImage();
+          }
+        } else {
+          // User is logged out
+          wishlistContainer.style.display = "none";
+          loginBtn.style.display = "block";
+          navbarContainer.style.display = "none";
+          updateDisplayedImage();
+        }
+      });
+
+      // Image upload functionality
+      const uploadForm = document.getElementById("uploadForm");
+      const imageUpload = document.getElementById("imageUpload");
+
+      uploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const file = imageUpload.files[0];
+        if (file) {
+          const user = auth.currentUser;
+          const storageRef = ref(storage, `users/${user.uid}/profile.jpg`);
+
+          try {
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            await updateProfile(user, {
+              photoURL: downloadURL,
+            });
+
+            // Update the displayed image in the navbar
+            updateDisplayedImage(downloadURL);
+
+            my_modal_3.close();
+          } catch (error) {
+            console.error("Error uploading image:", error);
+          }
         }
       });
     </script>
