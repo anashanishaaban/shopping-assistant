@@ -33,13 +33,6 @@ def signup_view(request):
 def profile(request):
     return render(request, 'Profile.html')
 
-def chatbot_view(request):
-    if request.method == 'POST':
-        prompt = request.POST.get('prompt', '')
-        response = openai_call(prompt)
-        return render(request, 'chatbot.html', {'response': response})
-    return render(request, 'chatbot.html')
-
 def add_product(request):
 
 
