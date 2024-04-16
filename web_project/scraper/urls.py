@@ -9,7 +9,5 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('landing/', views.search_results, name='search_results'),
     path('wishlist/', views.wishlist, name='wishlist'),
-    path('analyze-image/', views.analyze_image, name='analyze_image'),
-
-    path('wishlist/', views.wishlist, name='wishlist')
+    path('api', views.api_view, name='api_view')
 ]
