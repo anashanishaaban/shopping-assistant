@@ -92,7 +92,10 @@
                 <span class="font-bold text-lg">0 Items</span>
                 <span class="text">Subtotal: $0</span>
                 <div class="card-actions">
-                  <button onclick="location.href='{% url 'wishlist' %}'"class="btn btn-outline btn-info btn-sm">
+                  <button
+                    onclick="location.href='{% url 'wishlist' %}'"
+                    class="btn btn-outline btn-info btn-sm"
+                  >
                     View Wishlist
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -130,8 +133,8 @@
               class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
             >
               <li>
-                <button class="btn btn-sm">
-                  <a href="/profile">Profile</a>
+                <button class="btn btn-sm" onclick="my_modal_3.showModal()">
+                  <a>Change Profile Picture</a>
                 </button>
               </li>
               <li class="pt-2">
@@ -158,9 +161,9 @@
           >
             {% for product in products %}
             <div
-            class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
-            data-asin="{{ product.1 }}" 
-          >
+              class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
+              data-asin="{{ product.1 }}"
+            >
               <img
                 src="{{ product.3 }}"
                 alt="{{ product.0 }}"
@@ -209,10 +212,50 @@
       </div>
     </div>
 
+    <dialog id="my_modal_3" class="modal modal-middle">
+      <div class="modal-box flex justify-center items-center">
+        <form id="uploadForm">
+          <button
+            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onclick="my_modal_3.close()"
+          >
+            ✕
+          </button>
+          <input
+            type="file"
+            id="imageUpload"
+            class="file-input w-full max-w-xs"
+            accept="image/*"
+          />
+          <button type="submit" class="btn mt-4">Submit</button>
+        </form>
+      </div>
+    </dialog>
+
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-      import {getAuth,onAuthStateChanged,signOut,} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-      import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+        updateProfile,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
+      import {
+        getFirestore,
+        doc,
+        setDoc,
+        getDoc,
+        collection,
+        query,
+        where,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
@@ -233,25 +276,28 @@
       const usernameDisplay = document.getElementById("username-display");
       const logoutBtn = document.getElementById("logout-btn");
 
-        // Function to update the wishlist UI
+      // Function to update the wishlist UI
       function updateWishlistUI(user) {
         const wishlistRef = collection(db, "users", user.uid, "wishlist");
-        getDocs(wishlistRef).then(snapshot => {
+        getDocs(wishlistRef).then((snapshot) => {
           let totalItems = 0;
           let totalPrice = 0;
-          snapshot.forEach(doc => {
-              const data = doc.data();
-              // Assuming placeholders have a price of 0
-              if (data.price > 0) {  
-                  totalPrice += parseFloat(data.price);
-                  totalItems += 1; // Only count items that aren't placeholders
-              }
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            // Assuming placeholders have a price of 0
+            if (data.price > 0) {
+              totalPrice += parseFloat(data.price);
+              totalItems += 1; // Only count items that aren't placeholders
+            }
           });
 
-
-          const itemCountSpan = document.querySelector(".card-body span.font-bold.text-lg");
+          const itemCountSpan = document.querySelector(
+            ".card-body span.font-bold.text-lg"
+          );
           const subtotalSpan = document.querySelector(".card-body span.text");
-          const badgeIndicator = document.querySelector(".badge.badge-sm.indicator-item");
+          const badgeIndicator = document.querySelector(
+            ".badge.badge-sm.indicator-item"
+          );
 
           itemCountSpan.textContent = `${totalItems} Items`;
           subtotalSpan.textContent = `Subtotal: $${totalPrice.toFixed(2)}`;
@@ -260,28 +306,42 @@
       }
 
       // Handle adding items to the wishlist
-      document.getElementById("productGrid").addEventListener("click", function(event) {
-        if (event.target.closest(".btn-error")) {
-          const productCard = event.target.closest("[data-asin]");
-          const productId = productCard.getAttribute("data-asin");
-          const productName = productCard.querySelector("p").textContent;
-          const productImage = productCard.querySelector("img").src;
-          const productPrice = parseFloat(productCard.querySelector(".text-lg.font-semibold").textContent.replace("$", ""));
-          const productURL = productCard.querySelector("a").href;
+      document
+        .getElementById("productGrid")
+        .addEventListener("click", function (event) {
+          if (event.target.closest(".btn-error")) {
+            const productCard = event.target.closest("[data-asin]");
+            const productId = productCard.getAttribute("data-asin");
+            const productName = productCard.querySelector("p").textContent;
+            const productImage = productCard.querySelector("img").src;
+            const productPrice = parseFloat(
+              productCard
+                .querySelector(".text-lg.font-semibold")
+                .textContent.replace("$", "")
+            );
+            const productURL = productCard.querySelector("a").href;
 
-          const wishlistDoc = doc(db, "users", auth.currentUser.uid, "wishlist", productId);
-          setDoc(wishlistDoc, {
-            name: productName,
-            image: productImage,
-            price: productPrice,
-            url: productURL
-          }).then(() => {
-            updateWishlistUI(auth.currentUser);
-          }).catch(error => {
-            console.error("Error adding item to wishlist:", error);
-          });
-        }
-      });
+            const wishlistDoc = doc(
+              db,
+              "users",
+              auth.currentUser.uid,
+              "wishlist",
+              productId
+            );
+            setDoc(wishlistDoc, {
+              name: productName,
+              image: productImage,
+              price: productPrice,
+              url: productURL,
+            })
+              .then(() => {
+                updateWishlistUI(auth.currentUser);
+              })
+              .catch((error) => {
+                console.error("Error adding item to wishlist:", error);
+              });
+          }
+        });
 
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -290,9 +350,13 @@
           // other login related UI updates
         } else {
           // Handle user not logged in
-          document.querySelector(".card-body span.font-bold.text-lg").textContent = "0 Items";
-          document.querySelector(".card-body span.text").textContent = "Subtotal: $0.00";
-          document.querySelector(".badge.badge-sm.indicator-item").textContent = "0";
+          document.querySelector(
+            ".card-body span.font-bold.text-lg"
+          ).textContent = "0 Items";
+          document.querySelector(".card-body span.text").textContent =
+            "Subtotal: $0.00";
+          document.querySelector(".badge.badge-sm.indicator-item").textContent =
+            "0";
         }
       });
 
@@ -330,6 +394,68 @@
         document.body.style.background =
           'url("../static/images/background.png") no-repeat fixed';
         document.body.style.backgroundSize = "cover";
+      });
+
+      const storage = getStorage(app);
+
+      // Function to update the displayed image in the navbar
+      function updateDisplayedImage(photoURL) {
+        const avatarImg = document.querySelector(".avatar img");
+        avatarImg.src = photoURL || "../static/images/user.png";
+      }
+
+      // Check the user's authentication state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is logged in
+          wishlistContainer.style.display = "block";
+          loginBtn.style.display = "none";
+          navbarContainer.style.display = "block";
+          usernameDisplay.textContent = user.displayName;
+
+          // Retrieve the user's profile photo URL and update the displayed image
+          if (user.photoURL) {
+            updateDisplayedImage(user.photoURL);
+          } else {
+            updateDisplayedImage();
+          }
+        } else {
+          // User is logged out
+          wishlistContainer.style.display = "none";
+          loginBtn.style.display = "block";
+          navbarContainer.style.display = "none";
+          updateDisplayedImage();
+        }
+      });
+
+      // Image upload functionality
+      const uploadForm = document.getElementById("uploadForm");
+      const imageUpload = document.getElementById("imageUpload");
+
+      uploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const file = imageUpload.files[0];
+        if (file) {
+          const user = auth.currentUser;
+          const storageRef = ref(storage, `users/${user.uid}/profile.jpg`);
+
+          try {
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            await updateProfile(user, {
+              photoURL: downloadURL,
+            });
+
+            // Update the displayed image in the navbar
+            updateDisplayedImage(downloadURL);
+
+            my_modal_3.close();
+          } catch (error) {
+            console.error("Error uploading image:", error);
+          }
+        }
       });
     </script>
   </body>
