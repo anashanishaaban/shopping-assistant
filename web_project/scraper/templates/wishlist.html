@@ -1,111 +1,381 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishlist</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4">
-        <h1 class="text-xl font-bold text-gray-800 my-4">Your Wishlist</h1>
-        <div id="wishlistItems" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Wishlist items will be inserted here -->
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShopGPT - Search Results</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="flex-1">
+        <a class="btn btn-ghost text-xl" href="/">
+          <span>ShopGPT</span>
+          <span>
+            <img
+              src="../static/images/logo.png"
+              alt="Logo"
+              class="h-10 w-auto"
+            />
+          </span>
+        </a>
+      </div>
+      <div class="flex-1 justify-end">
+        <div id="auth-container" class="hidden pl-4">
+          <a href="{% url 'login' %}" class="btn btn-info btn-sm">Log in</a>
         </div>
+        <div id="navbar-container" class="hidden dropdown dropdown-end">
+          <button class="btn">
+            <div class="avatar">
+              <div class="w-10 rounded-full">
+                <img
+                  alt="User Avatar"
+                  src="../static/images/user.png"
+                  id="userAvatar"
+                />
+              </div>
+            </div>
+            <span id="username-display" class="ml-2 font-medium"></span>
+          </button>
+          <ul
+            tabindex="0"
+            class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+          >
+            <li>
+              <button class="btn btn-sm" onclick="my_modal_3.showModal()">
+                <a>Change Profile Picture</a>
+              </button>
+            </li>
+            <li class="pt-2">
+              <button class="btn btn-error btn-sm">
+                <a href="/login" id="logout-btn">Logout</a>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4">
+      <h1 class="text-xl font-bold text-gray-800 my-4">Your Wishlist</h1>
+      <div id="wishlistItems" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Wishlist items will be inserted here -->
+      </div>
+    </div>
+
+    <dialog id="my_modal_3" class="modal modal-middle">
+      <div class="modal-box flex justify-center items-center">
+        <form id="uploadForm">
+          <button
+            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onclick="my_modal_3.close()"
+          >
+            ✕
+          </button>
+          <input
+            type="file"
+            id="imageUpload"
+            class="file-input w-full max-w-xs"
+            accept="image/*"
+          />
+          <button type="submit" class="btn mt-4">Submit</button>
+        </form>
+      </div>
+    </dialog>
+
+    <!--Waves Background-->
+    <div
+      class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+      aria-hidden="true"
+    >
+      <div
+        class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+        style="
+          clip-path: polygon(
+            74.1% 44.1%,
+            100% 61.6%,
+            97.5% 26.9%,
+            85.5% 0.1%,
+            80.7% 2%,
+            72.5% 32.5%,
+            60.2% 62.4%,
+            52.4% 68.1%,
+            47.5% 58.3%,
+            45.2% 34.5%,
+            27.5% 76.7%,
+            0.1% 64.9%,
+            17.9% 100%,
+            27.6% 76.8%,
+            76.1% 97.7%,
+            74.1% 44.1%
+          );
+        "
+      ></div>
+    </div>
+    <div
+      class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+      aria-hidden="true"
+    >
+      <div
+        class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+        style="
+          clip-path: polygon(
+            74.1% 44.1%,
+            100% 61.6%,
+            97.5% 26.9%,
+            85.5% 0.1%,
+            80.7% 2%,
+            72.5% 32.5%,
+            60.2% 62.4%,
+            52.4% 68.1%,
+            47.5% 58.3%,
+            45.2% 34.5%,
+            27.5% 76.7%,
+            0.1% 64.9%,
+            17.9% 100%,
+            27.6% 76.8%,
+            76.1% 97.7%,
+            74.1% 44.1%
+          );
+        "
+      ></div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+        updateProfile,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+        doc,
+        deleteDoc,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL,
+      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
-            authDomain: "shopgpt-5c2ba.firebaseapp.com",
-            projectId: "shopgpt-5c2ba",
-            storageBucket: "shopgpt-5c2ba.appspot.com",
-            messagingSenderId: "38794416133",
-            appId: "1:38794416133:web:8de7c652259a571cf98c6c",
-        };
+      const firebaseConfig = {
+        apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
+        authDomain: "shopgpt-5c2ba.firebaseapp.com",
+        projectId: "shopgpt-5c2ba",
+        storageBucket: "shopgpt-5c2ba.appspot.com",
+        messagingSenderId: "38794416133",
+        appId: "1:38794416133:web:8de7c652259a571cf98c6c",
+      };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loadWishlistItems(user.uid);
-            } else {
-                console.log('User is not logged in');
-                // Optionally redirect to login page
-            }
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          loadWishlistItems(user.uid);
+        } else {
+          console.log("User is not logged in");
+          // Optionally redirect to login page
+        }
+      });
+
+      function loadWishlistItems(userId) {
+        const wishlistRef = collection(db, "users", userId, "wishlist");
+        getDocs(wishlistRef)
+          .then((snapshot) => {
+            const itemsContainer = document.getElementById("wishlistItems");
+            itemsContainer.innerHTML = "";
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              if (!isPlaceholder(data)) {
+                const docId = doc.id;
+                const itemElement = createItemElement(data, docId);
+                itemsContainer.appendChild(itemElement);
+              }
+            });
+            attachRemoveHandlers(userId);
+          })
+          .catch((error) => {
+            console.error("Error loading wishlist items:", error);
+          });
+      }
+
+      function isPlaceholder(data) {
+        // Adjust condition based on how you define a placeholder
+        // For example, this might check for a specific 'isPlaceholder' flag, or absence/presence of critical data
+        return (
+          data.price === 0 ||
+          data.price === undefined ||
+          data.name === "Placeholder"
+        );
+      }
+
+      function createItemElement(data, docId) {
+        const price =
+          typeof data.price === "number" ? data.price.toFixed(2) : "N/A";
+        const itemElement = document.createElement("div");
+        itemElement.className =
+          "w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl";
+        itemElement.dataset.asin = data.asin;
+        itemElement.innerHTML = `
+    <img src="${data.image}" alt="${data.name}" class="h-80 w-72 object-contain rounded-t-xl" />
+    <div class="px-4 py-3 w-72">
+      <p class="text-lg font-bold text-black truncate block capitalize">${data.name}</p>
+      <a href="${data.url}">
+        <button>
+          <div class="badge badge-accent">Buy Now↗</div>
+        </button>
+      </a>
+      <div class="flex items-center">
+        <p class="text-lg font-semibold text-black cursor-auto my-3">$${price}</p>
+        <div class="ml-auto">
+          <button class="remove-btn btn btn-sm btn-error btn-outline" data-doc-id="${docId}">
+            Remove
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+        return itemElement;
+      }
+
+      function attachRemoveHandlers(userId) {
+        const buttons = document.querySelectorAll(".remove-btn");
+        buttons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const docId = this.getAttribute("data-doc-id");
+            deleteItem(userId, docId);
+          });
         });
+      }
 
-        function loadWishlistItems(userId) {
-            const wishlistRef = collection(db, "users", userId, "wishlist");
-            getDocs(wishlistRef).then(snapshot => {
-                const itemsContainer = document.getElementById('wishlistItems');
-                itemsContainer.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (!isPlaceholder(data)) {
-                        const docId = doc.id;
-                        const itemElement = createItemElement(data, docId);
-                        itemsContainer.appendChild(itemElement);
-                    }
-                });
-                attachRemoveHandlers(userId);
-            }).catch(error => {
-                console.error("Error loading wishlist items:", error);
+      function deleteItem(userId, docId) {
+        const docRef = doc(db, "users", userId, "wishlist", docId);
+        deleteDoc(docRef)
+          .then(() => {
+            console.log("Document successfully deleted!");
+            loadWishlistItems(userId); // Refresh the list
+          })
+          .catch((error) => {
+            console.error("Error removing document: ", error);
+          });
+      }
+
+      const usernameDisplay = document.getElementById("username-display");
+      const userAvatar = document.getElementById("userAvatar");
+      const loginBtn = document.getElementById("auth-container");
+      const navbarContainer = document.getElementById("navbar-container");
+
+      // Check the user's authentication state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is logged in
+          loginBtn.style.display = "none";
+          navbarContainer.style.display = "block";
+
+          // Display the username
+          usernameDisplay.textContent = user.displayName;
+
+          // Display the user's profile image
+          if (user.photoURL) {
+            userAvatar.src = user.photoURL;
+          } else {
+            userAvatar.src = "../static/images/user.png";
+          }
+        } else {
+          // User is logged out
+          loginBtn.style.display = "block";
+          navbarContainer.style.display = "none";
+        }
+      });
+
+      // Logout functionality
+      logoutBtn.addEventListener("click", async () => {
+        try {
+          await signOut(auth);
+          window.location.href = "#";
+        } catch (error) {
+          console.error("Error logging out:", error);
+        }
+      });
+
+      const storage = getStorage(app);
+
+      // Function to update the displayed image in the navbar
+      function updateDisplayedImage(photoURL) {
+        const avatarImg = document.querySelector(".avatar img");
+        avatarImg.src = photoURL || "../static/images/user.png";
+      }
+
+      // Check the user's authentication state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is logged in
+          loginBtn.style.display = "none";
+          navbarContainer.style.display = "block";
+          usernameDisplay.textContent = user.displayName;
+
+          // Retrieve the user's profile photo URL and update the displayed image
+          if (user.photoURL) {
+            updateDisplayedImage(user.photoURL);
+          } else {
+            updateDisplayedImage();
+          }
+        } else {
+          // User is logged out
+          loginBtn.style.display = "block";
+          navbarContainer.style.display = "none";
+          updateDisplayedImage();
+        }
+      });
+
+      // Image upload functionality
+      const uploadForm = document.getElementById("uploadForm");
+      const imageUpload = document.getElementById("imageUpload");
+
+      uploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const file = imageUpload.files[0];
+        if (file) {
+          const user = auth.currentUser;
+          const storageRef = ref(storage, `users/${user.uid}/profile.jpg`);
+
+          try {
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            await updateProfile(user, {
+              photoURL: downloadURL,
             });
-        }
 
-        function isPlaceholder(data) {
-            // Adjust condition based on how you define a placeholder
-            // For example, this might check for a specific 'isPlaceholder' flag, or absence/presence of critical data
-            return data.price === 0 || data.price === undefined || data.name === "Placeholder";
-        }
+            // Update the displayed image in the navbar
+            updateDisplayedImage(downloadURL);
 
-        function createItemElement(data, docId) {
-            const price = typeof data.price === 'number' ? data.price.toFixed(2) : 'N/A'; // Proper handling of undefined prices
-            const itemElement = document.createElement('div');
-            itemElement.className = 'w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl';
-            itemElement.innerHTML = `
-                <img src="${data.image}" alt="${data.name}" class="h-80 w-72 object-cover rounded-t-xl">
-                <div class="px-4 py-3 w-72">
-                    <p class="text-lg font-bold text-black truncate block capitalize">
-                        <a href="${data.url}" target="_blank" class="text-blue-500 hover:text-blue-600">${data.name}</a>
-                    </p>
-                    <p class="text-lg font-semibold text-black my-3">$${price}</p>
-                    <button class="remove-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" data-doc-id="${docId}">
-                        Remove
-                    </button>
-                </div>
-            `;
-            return itemElement;
+            my_modal_3.close();
+          } catch (error) {
+            console.error("Error uploading image:", error);
+          }
         }
-
-        function attachRemoveHandlers(userId) {
-            const buttons = document.querySelectorAll('.remove-btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const docId = this.getAttribute('data-doc-id');
-                    deleteItem(userId, docId);
-                });
-            });
-        }
-
-        function deleteItem(userId, docId) {
-            const docRef = doc(db, "users", userId, "wishlist", docId);
-            deleteDoc(docRef)
-                .then(() => {
-                    console.log("Document successfully deleted!");
-                    loadWishlistItems(userId); // Refresh the list
-                })
-                .catch((error) => {
-                    console.error("Error removing document: ", error);
-                });
-        }
+      });
     </script>
-</body>
+  </body>
 </html>
