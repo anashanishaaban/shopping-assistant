@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4">
+        <h1 class="text-xl font-bold text-gray-800 my-4">Your Wishlist</h1>
+        <div id="wishlistItems" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Wishlist items will be inserted here -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
+            authDomain: "shopgpt-5c2ba.firebaseapp.com",
+            projectId: "shopgpt-5c2ba",
+            storageBucket: "shopgpt-5c2ba.appspot.com",
+            messagingSenderId: "38794416133",
+            appId: "1:38794416133:web:8de7c652259a571cf98c6c",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadWishlistItems(user.uid);
+            } else {
+                console.log('User is not logged in');
+                // Optionally redirect to login page
+            }
+        });
+
+        function loadWishlistItems(userId) {
+            const wishlistRef = collection(db, "users", userId, "wishlist");
+            getDocs(wishlistRef).then(snapshot => {
+                const itemsContainer = document.getElementById('wishlistItems');
+                itemsContainer.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (!isPlaceholder(data)) {
+                        const docId = doc.id;
+                        const itemElement = createItemElement(data, docId);
+                        itemsContainer.appendChild(itemElement);
+                    }
+                });
+                attachRemoveHandlers(userId);
+            }).catch(error => {
+                console.error("Error loading wishlist items:", error);
+            });
+        }
+
+        function isPlaceholder(data) {
+            // Adjust condition based on how you define a placeholder
+            // For example, this might check for a specific 'isPlaceholder' flag, or absence/presence of critical data
+            return data.price === 0 || data.price === undefined || data.name === "Placeholder";
+        }
+
+        function createItemElement(data, docId) {
+            const price = typeof data.price === 'number' ? data.price.toFixed(2) : 'N/A'; // Proper handling of undefined prices
+            const itemElement = document.createElement('div');
+            itemElement.className = 'w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl';
+            itemElement.innerHTML = `
+                <img src="${data.image}" alt="${data.name}" class="h-80 w-72 object-cover rounded-t-xl">
+                <div class="px-4 py-3 w-72">
+                    <p class="text-lg font-bold text-black truncate block capitalize">
+                        <a href="${data.url}" target="_blank" class="text-blue-500 hover:text-blue-600">${data.name}</a>
+                    </p>
+                    <p class="text-lg font-semibold text-black my-3">$${price}</p>
+                    <button class="remove-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" data-doc-id="${docId}">
+                        Remove
+                    </button>
+                </div>
+            `;
+            return itemElement;
+        }
+
+        function attachRemoveHandlers(userId) {
+            const buttons = document.querySelectorAll('.remove-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const docId = this.getAttribute('data-doc-id');
+                    deleteItem(userId, docId);
+                });
+            });
+        }
+
+        function deleteItem(userId, docId) {
+            const docRef = doc(db, "users", userId, "wishlist", docId);
+            deleteDoc(docRef)
+                .then(() => {
+                    console.log("Document successfully deleted!");
+                    loadWishlistItems(userId); // Refresh the list
+                })
+                .catch((error) => {
+                    console.error("Error removing document: ", error);
+                });
+        }
+    </script>
+</body>
+</html>

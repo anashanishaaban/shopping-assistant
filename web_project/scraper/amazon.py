@@ -14,6 +14,7 @@ def api_call(search_term):
 
     # Make the HTTP GET request to Rainforest API
     api_result = requests.get('https://api.rainforestapi.com/request', params)
+    print(api_result)
 
     # Save the CSV response to a file
     with open('output.csv', 'wb') as file:

@@ -152,10 +152,8 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-      import {
-        getAuth,
-        signInWithEmailAndPassword,
-      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import {getAuth,signInWithEmailAndPassword, onAuthStateChanged, signOut} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
@@ -168,6 +166,7 @@
 
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
+      const db = getFirestore(app);
 
       async function loginUser(event) {
         event.preventDefault(); // Prevent the default form submission

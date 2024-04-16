@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
   <head>
@@ -91,7 +92,7 @@
                 <span class="font-bold text-lg">0 Items</span>
                 <span class="text">Subtotal: $0</span>
                 <div class="card-actions">
-                  <button class="btn btn-outline btn-info btn-sm">
+                  <button onclick="location.href='{% url 'wishlist' %}'"class="btn btn-outline btn-info btn-sm">
                     View Wishlist
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -157,8 +158,9 @@
           >
             {% for product in products %}
             <div
-              class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
-            >
+            class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
+            data-asin="{{ product.1 }}" 
+          >
               <img
                 src="{{ product.3 }}"
                 alt="{{ product.0 }}"
@@ -209,11 +211,8 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-      import {
-        getAuth,
-        onAuthStateChanged,
-        signOut,
-      } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import {getAuth,onAuthStateChanged,signOut,} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
@@ -226,12 +225,76 @@
 
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
+      const db = getFirestore(app);
 
       const wishlistContainer = document.getElementById("wishlist-container");
       const loginBtn = document.getElementById("auth-container");
       const navbarContainer = document.getElementById("navbar-container");
       const usernameDisplay = document.getElementById("username-display");
       const logoutBtn = document.getElementById("logout-btn");
+
+        // Function to update the wishlist UI
+      function updateWishlistUI(user) {
+        const wishlistRef = collection(db, "users", user.uid, "wishlist");
+        getDocs(wishlistRef).then(snapshot => {
+          let totalItems = 0;
+          let totalPrice = 0;
+          snapshot.forEach(doc => {
+              const data = doc.data();
+              // Assuming placeholders have a price of 0
+              if (data.price > 0) {  
+                  totalPrice += parseFloat(data.price);
+                  totalItems += 1; // Only count items that aren't placeholders
+              }
+          });
+
+
+          const itemCountSpan = document.querySelector(".card-body span.font-bold.text-lg");
+          const subtotalSpan = document.querySelector(".card-body span.text");
+          const badgeIndicator = document.querySelector(".badge.badge-sm.indicator-item");
+
+          itemCountSpan.textContent = `${totalItems} Items`;
+          subtotalSpan.textContent = `Subtotal: $${totalPrice.toFixed(2)}`;
+          badgeIndicator.textContent = totalItems; // Update the badge on the wishlist icon as well
+        });
+      }
+
+      // Handle adding items to the wishlist
+      document.getElementById("productGrid").addEventListener("click", function(event) {
+        if (event.target.closest(".btn-error")) {
+          const productCard = event.target.closest("[data-asin]");
+          const productId = productCard.getAttribute("data-asin");
+          const productName = productCard.querySelector("p").textContent;
+          const productImage = productCard.querySelector("img").src;
+          const productPrice = parseFloat(productCard.querySelector(".text-lg.font-semibold").textContent.replace("$", ""));
+          const productURL = productCard.querySelector("a").href;
+
+          const wishlistDoc = doc(db, "users", auth.currentUser.uid, "wishlist", productId);
+          setDoc(wishlistDoc, {
+            name: productName,
+            image: productImage,
+            price: productPrice,
+            url: productURL
+          }).then(() => {
+            updateWishlistUI(auth.currentUser);
+          }).catch(error => {
+            console.error("Error adding item to wishlist:", error);
+          });
+        }
+      });
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is logged in
+          updateWishlistUI(user);
+          // other login related UI updates
+        } else {
+          // Handle user not logged in
+          document.querySelector(".card-body span.font-bold.text-lg").textContent = "0 Items";
+          document.querySelector(".card-body span.text").textContent = "Subtotal: $0.00";
+          document.querySelector(".badge.badge-sm.indicator-item").textContent = "0";
+        }
+      });
 
       // Check the user's authentication state
       onAuthStateChanged(auth, (user) => {

@@ -167,7 +167,8 @@
         createUserWithEmailAndPassword,
         updateProfile,
       } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
+      import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+      
       const firebaseConfig = {
         apiKey: "AIzaSyCvZ9gORMjqY5oPxxOyIEzLwmqSmkMNPsI",
         authDomain: "shopgpt-5c2ba.firebaseapp.com",
@@ -179,6 +180,7 @@
 
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
+      const db = getFirestore(app);
 
       // Function to register user
       async function registerUser(event) {
@@ -200,7 +202,14 @@
           await updateProfile(user, {
             displayName: username,
           });
-
+                // Create a new user document in Firestore
+          await setDoc(doc(db, "users", user.uid), {
+            username: username,
+          }); 
+          await setDoc(doc(db, "users", user.uid, "wishlist", "placeholder"), {
+            placeholdervalue: 0
+          });
+          
           console.log("Registered user:", user);
           location.href = "/login";
           alert("Registration successful!");

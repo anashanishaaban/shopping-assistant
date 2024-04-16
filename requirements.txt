@@ -11,3 +11,4 @@ pandas
 redis 
 celery
 eventlet
+firebase-admin

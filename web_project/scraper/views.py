@@ -1,24 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import product
+from .models import wishlist
 from .task import *
 from .amazon import *
 from .chatbot import *
+import os
 
-def add_product_data_to_db(data):
-    # Assuming your Product model has fields corresponding to the data list items
-    # e.g., URL, Title, Price, Ratings, Score, Review Summary
-    # Adapt field names based on your actual model definition
-    records = {
-        "url": str(data[0]),
-        "title" : str(data[1]),
-        "price " : str(data[2]),
-        "ratings": str(data[3]),
-        "score" : str(data[4]),
-        "review_summary" : str(data[5])
-    }
-    product.insert_one(records)
-
-def search_form(request):
+def index(request):
     return render(request, 'Landing.html')
 
 def login(request):
@@ -33,7 +20,11 @@ def signup_view(request):
 def profile(request):
     return render(request, 'Profile.html')
 
-def add_product(request):
+def wishlist(request):
+    return render(request, 'wishlist.html')
+
+
+def search_results(request):
 
 
     search_term = request.GET.get('search_term', '')
@@ -50,14 +41,5 @@ def add_product(request):
     results=get_product_data_csv("output.csv")
     #asins = [product[1] for product in results]
     #fetch_and_save_product_details.delay(asins)
-    # Now, iterate through the results and add them to the database
-    #for data in results:
-        #add_product_data_to_db(data)
-
-    return render(request, 'Results.html', {'products': results})
-
-def search_results(request):
-    search_term = request.GET.get('search_term')
-    # Retrieve the products based on the search_term
-    products = get_product_data_csv("output.csv")  # Your logic to fetch the products based on the search term
-    return render(request, 'results.html', {'search_term': search_term, 'products': products})
+ 
+    return render(request, 'results.html', {'search_term': search_term, 'products': results})
