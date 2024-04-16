@@ -4,6 +4,40 @@ from .task import *
 from .amazon import *
 from .chatbot import *
 import os
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import openai
+
+@csrf_exempt
+def analyze_image(request):
+    if request.method == 'POST':
+        image_url = request.POST.get('image_url')
+        OPEN_AI_KEY = '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'
+        client = OpenAI(api_key=OPEN_AI_KEY)
+
+        response = client.chat.completions.create(
+            model="gpt-4-vision-preview",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "What’s in this image?"},
+                        {
+                            "type": "image_url",
+                            "image_url": image_url,
+                        },
+                    ],
+                }
+            ],
+            max_tokens=300,
+        )
+
+        description = response.choices[0].message['content'] if response.choices else 'No description found.'
+        return JsonResponse({'description': description})
+
+    return JsonResponse({'error': 'This endpoint supports only POST method.'}, status=405)
 
 def index(request):
     return render(request, 'Landing.html')

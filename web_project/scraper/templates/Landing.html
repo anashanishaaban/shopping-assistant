@@ -168,6 +168,12 @@
             </button>
           </form>
         </div>
+
+        <div class="mt-4 text-center">
+          <input type="file" id="image-upload" accept="image/*" />
+          <button id="analyze-button" class="btn btn-primary">Analyze Image</button>
+        </div>
+        <div id="result"></div>
       </div>
       <div
         class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
@@ -471,6 +477,33 @@
         }
       }
 
+      document.addEventListener('DOMContentLoaded', () => {
+        const analyzeButton = document.getElementById('analyze-button');
+        if (analyzeButton) {
+            analyzeButton.addEventListener('click', () => {
+                const fileInput = document.getElementById('image-upload');
+                if (fileInput && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const formData = new FormData();
+                    formData.append('image', file);
+
+                    fetch('/analyze-image/', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('result').textContent = data.description;
+                    })
+                    .catch(error => console.error('Error:', error));
+                } else {
+                    console.log("No file selected or file input not found");
+                }
+            });
+        } else {
+            console.error('Analyze button not found');
+        }
+      });
       onAuthStateChanged(auth, (user) => {
         if (user) {
           loginBtn.style.display = "none";
