@@ -1,10 +1,9 @@
 from openai import OpenAI
 import pandas as pd
-import requests
 
-def openai_call(request):
+'''def openai_call(request):
  
-  #client = OpenAI(api_key=OPENAI_API_KEY)
+  client = OpenAI(api_key='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')
   if requests.method == 'POST':
       user_query = request.POST.get('user_query')
       
@@ -22,7 +21,29 @@ def openai_call(request):
               {"role": "user", "content": prompt}
           ]
       )
-      content = response.choices[0].message.content
+      content = response.choices[0].message.content'''
+
+import os
+client = OpenAI(
+    # This is the default and can be omitted
+    api_key=os.environ.get("OPENAI_API_KEY"),
+)
+  
+def openai_call(prompt):
+    response = client.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        temperature=1,
+        max_tokens=256,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+    return response.choices[0].message['content']
+
+print(openai_call("hello"))
 
 def get_product_data_as_text(file_path):
     # Load the CSV file into a DataFrame

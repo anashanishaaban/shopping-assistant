@@ -1,18 +1,5 @@
 from django.shortcuts import render, redirect
 from .models import product
-from django.http import HttpResponse
-import requests
-from bs4 import BeautifulSoup
-import csv
-import time
-from concurrent.futures import ThreadPoolExecutor
-import requests
-import datetime
-import smtplib
-import pandas as pd
-import os
-import openai
-from openai import OpenAI
 from .task import *
 from .amazon import *
 from .chatbot import *
@@ -45,6 +32,13 @@ def signup_view(request):
 
 def profile(request):
     return render(request, 'Profile.html')
+
+def chatbot_view(request):
+    if request.method == 'POST':
+        prompt = request.POST.get('prompt', '')
+        response = openai_call(prompt)
+        return render(request, 'chatbot.html', {'response': response})
+    return render(request, 'chatbot.html')
 
 def add_product(request):
 
