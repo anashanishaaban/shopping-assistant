@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chatbot</title>
+  </head>
+  <body>
+    <h1>Chatbot</h1>
+    <div id="chat-container">
+      {% if response %}
+      <div class="message bot-message">{{ response }}</div>
+      {% endif %}
+    </div>
+    <form method="POST">
+      {% csrf_token %}
+      <input type="text" name="prompt" placeholder="Enter your message" />
+      <button type="submit">enter</button>
+    </form>
+  </body>
+</html>

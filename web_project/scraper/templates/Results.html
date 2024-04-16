@@ -13,107 +13,196 @@
       rel="stylesheet"
       type="text/css"
     />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: url("../static/images/background.png");
+        background-size: cover;
+      }
+
+      .content-wrapper {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
   </head>
   <body>
-    <div class="navbar bg-base-200">
-      <div class="flex-1">
-        <a class="btn btn-ghost text-xl" href="/">
-          <span>ShopGPT</span>
-          <span>
-            <img
-              src="../static/images/logo.png"
-              alt="Logo"
-              class="h-10 w-auto"
+    <div class="content-wrapper">
+      <div class="navbar">
+        <div class="flex-1">
+          <a class="btn btn-ghost text-xl" href="/">
+            <span>ShopGPT</span>
+            <span>
+              <img
+                src="../static/images/logo.png"
+                alt="Logo"
+                class="h-10 w-auto"
+              />
+            </span>
+          </a>
+        </div>
+        <div class="flex-1 justify-center">
+          <form
+            action="{% url 'search_results' %}"
+            method="get"
+            class="input input-bordered flex items-center gap-2 justify-center w-full"
+          >
+            <input
+              type="text"
+              class="grow w-full"
+              name="search_term"
+              placeholder="Search"
+              style="flex: 1"
             />
-          </span>
-        </a>
-      </div>
-      <div class="form-control">
-        <input
-          type="text"
-          placeholder="Search"
-          class="input input-bordered w-24 md:w-auto input-info"
-        />
-      </div>
-      <div class="flex-none">
-        <div id="wishlist-container" class="hidden dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
-            <div class="indicator">
-              <img src="../static/images/wishlist.png" class="h-8 w-8" />
-              <span class="badge badge-sm indicator-item">0</span>
-            </div>
-          </div>
+            <button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="w-4 h-4 opacity-70"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
+        <div class="flex-1 justify-end">
           <div
-            tabindex="0"
-            class="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow"
+            id="wishlist-container"
+            class="hidden dropdown dropdown-end pr-2"
           >
-            <div class="card-body">
-              <span class="font-bold text-lg">0 Items</span>
-              <span class="text-info">Subtotal: $0</span>
-              <div class="card-actions">
-                <button class="btn btn-primary btn-block">View Wishlist</button>
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+              <div class="indicator">
+                <img src="../static/images/blueheart.png" class="h-8 w-8" />
+                <span class="badge badge-sm indicator-item">0</span>
+              </div>
+            </div>
+            <div
+              tabindex="0"
+              class="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow"
+            >
+              <div class="card-body">
+                <span class="font-bold text-lg">0 Items</span>
+                <span class="text">Subtotal: $0</span>
+                <div class="card-actions">
+                  <button class="btn btn-outline btn-info btn-sm">
+                    View Wishlist
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div id="auth-container" class="hidden">
-          <a href="{% url 'login' %}" class="btn btn-ghost">Log in</a>
-        </div>
-        <div id="navbar-container" class="hidden dropdown dropdown-end">
-          <div tabindex="0" role="button" class="flex items-center">
-            <div class="avatar">
-              <div class="w-10 rounded-full">
-                <img alt="User Avatar" src="../static/images/user.png" />
-              </div>
-            </div>
-            <span id="username-display" class="ml-2 font-medium"></span>
+          <div id="auth-container" class="hidden pl-4">
+            <a href="{% url 'login' %}" class="btn btn-info btn-sm">Log in</a>
           </div>
-          <ul
-            tabindex="0"
-            class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            <li><a>Profile</a></li>
-            <li><a href="#" id="logout-btn">Logout</a></li>
-          </ul>
+          <div id="navbar-container" class="hidden dropdown dropdown-end">
+            <button class="btn">
+              <div class="avatar">
+                <div class="w-10 rounded-full">
+                  <img alt="User Avatar" src="../static/images/user.png" />
+                </div>
+              </div>
+              <span id="username-display" class="ml-2 font-medium"></span>
+            </button>
+            <ul
+              tabindex="0"
+              class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <button class="btn btn-sm">
+                  <a href="/profile">Profile</a>
+                </button>
+              </li>
+              <li class="pt-2">
+                <button class="btn btn-error btn-sm">
+                  <a href="/login" id="logout-btn">Logout</a>
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="bg-white pt-16 md:pt-28">
-      <div
-        class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8"
-      >
-        <h2 class="sr-only">Products</h2>
-
+      <div class="pt-16 md:pt-10">
         <div
-          id="productGrid"
-          class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
+          class="mx-auto max-w-5xl px-4 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-12"
         >
-          {% for product in products %}
-          <a
-            href="{{ product.2 }}"
-            class="group border border-gray-300 rounded-lg shadow-sm overflow-hidden"
+          <p class="pb-10">
+            Displaying search results for: <b>{{ search_term }}</b>
+          </p>
+          <h2 class="sr-only">Products</h2>
+          <div
+            id="productGrid"
+            class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-12"
           >
+            {% for product in products %}
             <div
-              class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7"
+              class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
             >
               <img
                 src="{{ product.3 }}"
                 alt="{{ product.0 }}"
-                class="h-full w-full object-cover object-center group-hover:opacity-75"
+                class="h-80 w-72 object-contain rounded-t-xl"
               />
+              <div class="px-4 py-3 w-72">
+                <p
+                  class="text-lg font-bold text-black truncate block capitalize"
+                >
+                  {{ product.0 }}
+                </p>
+                <a href="{{product.2}}">
+                  <button>
+                    <div class="badge badge-neutral">Amazon</div>
+                  </button>
+                </a>
+                <div class="flex items-center">
+                  <p class="text-lg font-semibold text-black cursor-auto my-3">
+                    ${{ product.9 }}
+                  </p>
+                  <div class="ml-auto">
+                    <button class="btn btn-sm btn-error btn-outline">
+                      Wishlist
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="p-6">
-              <h3 class="text-sm text-gray-700">{{ product.0 }}</h3>
-              <p class="mt-1 text-lg font-medium text-gray-900">
-                ${{ product.9 }}
-              </p>
-              <p class="text-sm text-gray-500">
-                {{ product.6 }} | {{ product.7 }}
-              </p>
-            </div>
-          </a>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
@@ -172,30 +261,13 @@
         }
       });
 
-      function createCard(product) {
-        return `
-        <a href="#" class="group border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-    <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-        <img src="${product.ImageUrl}" alt="${product.ProductName}" class="h-full w-full object-cover object-center group-hover:opacity-75">
-    </div>
-    <div class="p-6"> <!-- Increased padding here -->
-        <h3 class="text-sm text-gray-700">${product.ProductName}</h3>
-        <p class="mt-1 text-sm text-gray-500">${product.Brand}</p>
-        <p class="mt-1 text-lg font-medium text-gray-900">$${product.Price}</p>
-    </div>
-</a>
-        `;
-      }
-
-      function renderProducts() {
-        const products = parseCSV(csvData);
-        const grid = document.getElementById("productGrid");
-        products.forEach((product) => {
-          grid.innerHTML += createCard(product);
-        });
-      }
-
-      renderProducts();
+      // background
+      window.addEventListener("DOMContentLoaded", function () {
+        // Apply CSS styles after the content is loaded
+        document.body.style.background =
+          'url("../static/images/background.png") no-repeat fixed';
+        document.body.style.backgroundSize = "cover";
+      });
     </script>
   </body>
 </html>
