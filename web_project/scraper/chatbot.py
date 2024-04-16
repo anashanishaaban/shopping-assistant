@@ -1,7 +1,7 @@
 from openai import OpenAI
 import pandas as pd
 
-'''def openai_call(request):
+def openai_call(request):
  
   client = OpenAI(api_key='')
   if requests.method == 'POST':
@@ -21,7 +21,7 @@ import pandas as pd
               {"role": "user", "content": prompt}
           ]
       )
-      content = response.choices[0].message.content'''
+      content = response.choices[0].message.content
 
 def get_product_data_as_text(file_path):
     # Load the CSV file into a DataFrame

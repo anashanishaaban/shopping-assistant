@@ -38,18 +38,11 @@ def asin_api_call(asin):
     # Process and concatenate product details into a single string (or a structured format as needed)
     product_details = json.dumps(product_data)
     all_product_details.append(product_details)
-    add_product_data_to_db(all_product_details)
-
+    with open('product_details.txt', 'w') as file:
+        for detail in all_product_details:
+            file.write(detail + "\n")
 
 @shared_task
 def fetch_and_save_product_details(asin_list):
     for asin in asin_list:
         asin_api_call.delay(asin)
-
-    # Save the concatenated string of all product details into MongoDB
-    #add_product_data_to_db(' '.join(all_product_details))
-
-def add_product_data_to_db(product_details):
-    # Here you need to adjust based on how you want to store the data in MongoDB
-    record = {"all_details": product_details}
-    product.insert_one(record)
