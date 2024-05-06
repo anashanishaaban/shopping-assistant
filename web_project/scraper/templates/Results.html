@@ -99,52 +99,6 @@
         margin-left: 10px;
       }
     </style>
-    <script>
-      function toggleChatWindow() {
-        var chatWindow = document.getElementById("chatWindow");
-        chatWindow.style.display =
-          chatWindow.style.display === "none" ? "flex" : "none";
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        document
-          .getElementById("chatIconContainer")
-          .addEventListener("click", toggleChatWindow);
-
-        document
-          .getElementById("messageForm")
-          .addEventListener("submit", function (e) {
-            e.preventDefault();
-            let message = document.getElementById("message").value;
-            displayMessage(message, "user");
-            document.getElementById("message").value = "";
-            fetch("/api", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ message: message }),
-            })
-              .then((response) => response.text())
-              .then((data) => {
-                displayMessage(data, "ai");
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-                displayMessage("Error fetching response", "error");
-              });
-          });
-
-        function displayMessage(text, type) {
-          const msgDiv = document.createElement("div");
-          msgDiv.classList.add("message", type);
-          msgDiv.innerText = text;
-          document.getElementById("chatContainer").appendChild(msgDiv);
-          document.getElementById("chatContainer").scrollTop =
-            document.getElementById("chatContainer").scrollHeight;
-        }
-      });
-    </script>
   </head>
   <body>
     <div class="content-wrapper">
@@ -459,7 +413,7 @@
             let message = document.getElementById("message").value;
             displayMessage(message, "user");
             document.getElementById("message").value = "";
-            fetch("/api", {
+            fetch("/api/", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -606,51 +560,6 @@
           loginBtn.style.display = "block";
           navbarContainer.style.display = "none";
           updateDisplayedImage();
-        }
-      });
-
-      function toggleChatWindow() {
-        var chatWindow = document.getElementById("chatWindow");
-        chatWindow.style.display =
-          chatWindow.style.display === "none" ? "flex" : "none";
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        document
-          .getElementById("chatIconContainer")
-          .addEventListener("click", toggleChatWindow);
-
-        document
-          .getElementById("messageForm")
-          .addEventListener("submit", function (e) {
-            e.preventDefault();
-            let message = document.getElementById("message").value;
-            displayMessage(message, "user");
-            document.getElementById("message").value = "";
-            fetch("/api", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ message: message }),
-            })
-              .then((response) => response.text())
-              .then((data) => {
-                displayMessage(data, "ai");
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-                displayMessage("Error fetching response", "error");
-              });
-          });
-
-        function displayMessage(text, type) {
-          const msgDiv = document.createElement("div");
-          msgDiv.classList.add("message", type);
-          msgDiv.innerText = text;
-          document.getElementById("chatContainer").appendChild(msgDiv);
-          document.getElementById("chatContainer").scrollTop =
-            document.getElementById("chatContainer").scrollHeight;
         }
       });
 
